@@ -1,13 +1,18 @@
+import time
+import sys
+import random
+
 class AhorcadoGame:
     def __init__(self):
         self.palabra_secreta = self.obtener_palabra()
         self.letras_adivinadas = []
+        self.letras_incorrectas = []
         self.intentos_maximos = 6
         self.intentos = 0
 
     def obtener_palabra(self):
         palabras = ["python", "programacion", "computadora", "codigo", "tecnologia", "ahorcado"]
-        return palabras[5]
+        return random.choice(palabras)
 
     def mostrar_palabra(self):
         resultado = ""
@@ -20,82 +25,91 @@ class AhorcadoGame:
 
     def dibujar_ahorcado(self):
         if self.intentos == 0:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |")
             print(" |")
             print(" |")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 1:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |")
             print(" |")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 2:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |    |")
             print(" |")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 3:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |   /|")
             print(" |")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 4:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |   /|\\")
             print(" |")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 5:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |   /|\\")
             print(" |   /")
-            print(" |___")
+            print(" |_________")
         elif self.intentos == 6:
-            print("  __")
+            print("  ____")
             print(" |    |")
             print(" |    O")
             print(" |   /|\\")
             print(" |   / \\")
-            print(" |___")
+            print(" |_________")
 
     def jugar(self):
-        print("¿Jugamos AhorcadoGame?")
-        print("Adivina la palabra oculta letra por letra. ¡Suerte UwU!")
-        print(self.mostrar_palabra())
-
         while True:
-            letra = input("Adivina una letra: ")
+            letra = input("Adivina una letra: ").lower()
 
-            self.letras_adivinadas.append(letra)
+            if not letra.isalpha() or len(letra) != 1:
+                print("Por favor, ingresa solo una letra válida.")
+                continue
+
+            if letra in self.letras_adivinadas or letra in self.letras_incorrectas:
+                print("Ya has intentado esa letra. Intenta con otra.")
+                continue
 
             if letra not in self.palabra_secreta:
+                self.letras_incorrectas.append(letra)
                 self.intentos += 1
                 self.dibujar_ahorcado()
-                print("Letra incorrecta,. Intentos restantes:", self.intentos_maximos - self.intentos)
+                print(f"Letra incorrecta. Letras incorrectas: {', '.join(self.letras_incorrectas)}")
+                print("Intentos restantes:", self.intentos_maximos - self.intentos)
             else:
-                print("¡whoosh, letra correcta!")
+                self.letras_adivinadas.append(letra)
+                print("¡Correcto!")
 
             palabra_mostrada = self.mostrar_palabra()
             print(palabra_mostrada)
 
-            if palabra_mostrada.replace(" ", "") == self.palabra_secreta:
-                print("¡Que pro!, le has dado a la palabra.")
+            if "_" not in palabra_mostrada:
+                print("¡Felicidades! Has ganado, la palabra secreta era:", self.palabra_secreta)
                 break
 
             if self.intentos == self.intentos_maximos:
                 print("Este no era tu momento, has agotado los intentos. Tu palabra secreta era:", self.palabra_secreta)
                 break
+
+        print("Juego terminado. Cerrando en 5 segundos...")
+        time.sleep(5)
+        sys.exit()
 
 if __name__ == "__main__":
     juego = AhorcadoGame()
