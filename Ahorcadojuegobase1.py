@@ -9,6 +9,7 @@ class AhorcadoGame:
         self.letras_incorrectas = []
         self.intentos_maximos = 6
         self.intentos = 0
+        self.tiempo_inicio = None  # Nueva variable para almacenar el tiempo de inicio
 
     def obtener_palabra(self):
         palabras = ["python", "programacion", "computadora", "codigo", "tecnologia", "ahorcado"]
@@ -75,6 +76,7 @@ class AhorcadoGame:
             print(" |_________")
 
     def jugar(self):
+        self.tiempo_inicio = time.time()  # Registra el tiempo de inicio
         while True:
             letra = input("Adivina una letra: ").lower()
 
@@ -100,17 +102,20 @@ class AhorcadoGame:
             print(palabra_mostrada)
 
             if "_" not in palabra_mostrada:
-                print("¡Felicidades! Has ganado, la palabra secreta era:", self.palabra_secreta)
+                tiempo_final = time.time()  # Registra el tiempo final
+                tiempo_total = tiempo_final - self.tiempo_inicio
+                print(f"¡Felicidades! Has ganado, la palabra era: {self.palabra_secreta}")
+                print(f"Tiempo total: {tiempo_total:.2f} segundos")
                 break
 
             if self.intentos == self.intentos_maximos:
-                print("Este no era tu momento, has agotado los intentos. Tu palabra secreta era:", self.palabra_secreta)
+                print(f"Este no era tu momento, has agotado los intentos. La palabra era: {self.palabra_secreta}")
                 break
 
         print("Juego terminado. Cerrando en 5 segundos...")
         time.sleep(5)
         sys.exit()
-
+        
 if __name__ == "__main__":
     juego = AhorcadoGame()
     juego.jugar()
