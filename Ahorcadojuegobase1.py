@@ -1,19 +1,28 @@
-import time
-import sys
-import random
-
 class AhorcadoGame:
     def __init__(self):
-        self.palabra_secreta = self.obtener_palabra()
+        # Se añadió un diccionario de palabras con pistas para seleccionar la palabra y su pista de forma aleatoria
+        self.palabras = {
+            "python": "Lenguaje de programación popular",
+            "programacion": "Creación de algoritmos para resolver problemas",
+            "computadora": "Dispositivo electrónico para procesar datos",
+            "codigo": "Conjunto de instrucciones en un programa",
+            "tecnologia": "Conjunto de conocimientos técnicos aplicados",
+            "ahorcado": "Juego clásico de adivinar palabras"
+        }
+        self.palabra_secreta, self.pista = self.obtener_palabra()  # Modificado para usar el nuevo método que incluye pistas
         self.letras_adivinadas = []
-        self.letras_incorrectas = []
         self.intentos_maximos = 6
         self.intentos = 0
-        self.tiempo_inicio = None  # Nueva variable para almacenar el tiempo de inicio
 
     def obtener_palabra(self):
-        palabras = ["python", "programacion", "computadora", "codigo", "tecnologia", "ahorcado"]
-        return random.choice(palabras)
+        # Modificado para seleccionar una palabra y su pista de forma aleatoria del diccionario añadido en __init__
+        import random
+        
+        palabra = random.choice(list(self.palabras.keys()))  # Corregido para usar self.palabras
+        pista = self.palabras[palabra]  # Corregido para usar self.palabras
+        return palabra, pista
+        
+        #pista = palabras[palabra]
 
     def mostrar_palabra(self):
         resultado = ""
@@ -25,97 +34,51 @@ class AhorcadoGame:
         return resultado.strip()
 
     def dibujar_ahorcado(self):
-        if self.intentos == 0:
-            print("  ____")
-            print(" |    |")
-            print(" |")
-            print(" |")
-            print(" |")
-            print(" |_________")
-        elif self.intentos == 1:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |")
-            print(" |")
-            print(" |_________")
-        elif self.intentos == 2:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |    |")
-            print(" |")
-            print(" |_________")
-        elif self.intentos == 3:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |   /|")
-            print(" |")
-            print(" |_________")
-        elif self.intentos == 4:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |   /|\\")
-            print(" |")
-            print(" |_________")
-        elif self.intentos == 5:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |   /|\\")
-            print(" |   /")
-            print(" |_________")
-        elif self.intentos == 6:
-            print("  ____")
-            print(" |    |")
-            print(" |    O")
-            print(" |   /|\\")
-            print(" |   / \\")
-            print(" |_________")
+        # Sin cambios significativos en la lógica, pero esencial para integrar con el nuevo sistema de intentos
+        estados = [
+            "  ____\n |    |\n |    O\n |   /|\\\n |   / \\\n |_________",
+            "  ____\n |    |\n |    O\n |   /|\\\n |   /\n |_________",
+            "  ____\n |    |\n |    O\n |   /|\\\n |\n |_________",
+            "  ____\n |    |\n |    O\n |   /|\n |\n |_________",
+            "  ____\n |    |\n |    O\n |    |\n |\n |_________",
+            "  ____\n |    |\n |    O\n |\n |\n |_________",
+            "  ____\n |    |\n |\n |\n |\n |_________",
+        ]
+        print(estados[self.intentos])
 
     def jugar(self):
-        self.tiempo_inicio = time.time()  # Registra el tiempo de inicio
+        print("Bienvenido al AhorcadoGame. Intenta adivinar la palabra.")
+        # Se añade la impresión de la pista al inicio del juego
+        print(f"Pista: {self.pista}")
+        print(self.mostrar_palabra())
+
         while True:
             letra = input("Adivina una letra: ").lower()
 
-            if not letra.isalpha() or len(letra) != 1:
-                print("Por favor, ingresa solo una letra válida.")
+            if letra in self.letras_adivinadas:
+                print("Ya has intentado con esa letra. Prueba con otra.")
                 continue
 
-            if letra in self.letras_adivinadas or letra in self.letras_incorrectas:
-                print("Ya has intentado esa letra. Intenta con otra.")
-                continue
+            self.letras_adivinadas.append(letra)
 
             if letra not in self.palabra_secreta:
-                self.letras_incorrectas.append(letra)
                 self.intentos += 1
-                self.dibujar_ahorcado()
-                print(f"Letra incorrecta. Letras incorrectas: {', '.join(self.letras_incorrectas)}")
-                print("Intentos restantes:", self.intentos_maximos - self.intentos)
+                print("Letra incorrecta. Intentos restantes:", self.intentos_maximos - self.intentos)
+                self.dibujar_ahorcado()  # La llamada a dibujar_ahorcado se mantiene igual pero se integra con los intentos ajustados
             else:
-                self.letras_adivinadas.append(letra)
-                print("¡Correcto!")
+                print("¡Correcto! Esa letra está en la palabra.")
 
             palabra_mostrada = self.mostrar_palabra()
             print(palabra_mostrada)
 
             if "_" not in palabra_mostrada:
-                tiempo_final = time.time()  # Registra el tiempo final
-                tiempo_total = tiempo_final - self.tiempo_inicio
-                print(f"¡Felicidades! Has ganado, la palabra era: {self.palabra_secreta}")
-                print(f"Tiempo total: {tiempo_total:.2f} segundos")
+                print("¡Felicidades! Has ganado, la palabra era:", self.palabra_secreta)
                 break
 
-            if self.intentos == self.intentos_maximos:
-                print(f"Este no era tu momento, has agotado los intentos. La palabra era: {self.palabra_secreta}")
+            if self.intentos >= self.intentos_maximos:
+                print("Lo siento, has perdido. La palabra era:", self.palabra_secreta)
                 break
 
-        print("Juego terminado. Cerrando en 5 segundos...")
-        time.sleep(5)
-        sys.exit()
-        
 if __name__ == "__main__":
     juego = AhorcadoGame()
     juego.jugar()
